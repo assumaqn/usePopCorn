@@ -50,14 +50,24 @@ const tempWatchedData = [
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
-function NavBar(){
+export default function App() {
+     const [movies, setMovies] = useState(tempMovieData);
+  return (
+    <>
+      <NavBar movies={movies}/>
+       <Main movies={movies}/>
+      
+    </>
+  );
+}
+function NavBar({movies}){
   
   return(
 <nav className="nav-bar">
   <Logo/>
         <Search/>
         
-        <NumbResult/>
+        <NumbResult movies={movies}/>
       </nav>
   );
 }
@@ -84,26 +94,17 @@ function Search(){
         />
   );
 }
-function NumbResult(){
+function NumbResult({movies}){
   return(
     <p className="num-results">
-          Found <strong>X</strong> results
+          Found <strong>{movies.length}</strong> results
         </p>
   );
 }
 
 
-export default function App() {
-  return (
-    <>
-      <NavBar/>
-       <Main/>
-      
-    </>
-  );
-}
-function Main(){
-   const [movies, setMovies] = useState(tempMovieData);
+function Main({movies}){
+
  
   return(
     <main className="main">
@@ -134,7 +135,7 @@ function ListBox({movies}){
 function MovieList({movies}){
   return(
     <ul className="list">
-              {movies?.map((movie) => <Movie movie={movie}/>
+              {movies?.map((movie) => <Movie movie={movie} key={movie.imdbID}/>
               )}
             </ul>
   );
@@ -142,7 +143,7 @@ function MovieList({movies}){
 function Movie({movie}){
   return(
     
-                <li key={movie.imdbID}>
+                <li>
                   <img src={movie.Poster} alt={`${movie.Title} poster`} />
                   <h3>{movie.Title}</h3>
                   <div>
