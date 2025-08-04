@@ -51,16 +51,19 @@ const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 const KEY = "6b02aa70";
-const query = " Inception";
+// const query = " The Matrix";
 //
 export default function App() {
   const [movies, setMovies] = useState([]);
+  const [query, setQuery] = useState("");
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [watched, setWatched] = useState([]);
 
   useEffect(() => {
     setIsLoading(true);
+    setError("");
     async function fetchMovie() {
       try {
         const res = await fetch(
@@ -77,15 +80,20 @@ export default function App() {
       } finally {
         setIsLoading(false);
       }
+      if (query.length < 3) {
+        setError("");
+        setMovies([]);
+      }
     }
+
     fetchMovie();
-  }, []);
+  }, [query]);
 
   return (
     <>
       <NavBar>
         <Logo />
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumbResult movies={movies} />
       </NavBar>
       <Main>
@@ -128,8 +136,7 @@ function Logo() {
     </div>
   );
 }
-function Search() {
-  const [query, setQuery] = useState("");
+function Search({ query, setQuery }) {
   return (
     <input
       className="search"
