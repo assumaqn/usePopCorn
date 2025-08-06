@@ -311,7 +311,7 @@ body {
 
 .seconds {
   background-color: var(--color-background-100);
-  width: 8rem;
+  width: 8.5rem;
   border-radius: 10rem;
   font-weight: 600;
   text-align: center;

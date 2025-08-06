@@ -67,6 +67,10 @@ export default function App() {
     setSelectedId(id);
   }
 
+  function handleWatchedMovie(movie) {
+    setWatched((watched) => [...watched, movie]);
+  }
+
   useEffect(() => {
     setIsLoading(true);
     setError("");
@@ -116,6 +120,8 @@ export default function App() {
             <MovieDetail
               selectedID={selectedID}
               setSelectedId={setSelectedId}
+              onWatchedMovie={handleWatchedMovie}
+              watched={watched}
             />
           ) : (
             <>
@@ -211,8 +217,16 @@ function Movie({ movie, onSelection }) {
     </li>
   );
 }
-function MovieDetail({ selectedID, setSelectedId }) {
+function MovieDetail({ selectedID, setSelectedId, onWatchedMovie, watched }) {
   const [movie, setMovie] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [userRating, setUserRating] = useState("");
+
+  const isWatched = watched.map((movie) => movie.imdbID).includes(selectedID);
+  const currentUserRating = watched.find(
+    (movie) => movie.imdbID === selectedID
+  )?.userRating;
+
   const {
     Title: title,
     Year: year,
@@ -225,17 +239,32 @@ function MovieDetail({ selectedID, setSelectedId }) {
 
     Actors: actors,
     Director: director,
-    Gener: gener,
+    Genre: genre,
   } = movie;
 
+  const newWatchedMovie = {
+    imdbID: selectedID,
+    poster,
+    title,
+    runtime: Number(runtime?.split(" ").at(0)),
+    imdbRating,
+    userRating,
+  };
+  function addNewWatchedMovie() {
+    onWatchedMovie(newWatchedMovie);
+    setSelectedId(null);
+  }
   useEffect(
     function () {
+      setIsLoading(true);
       async function fetchMovieDetail() {
         const res = await fetch(
           `https://www.omdbapi.com/?apikey=${KEY}&i=${selectedID}`
         );
         const data = await res.json();
         setMovie(data);
+
+        setIsLoading(false);
       }
       fetchMovieDetail();
     },
@@ -244,34 +273,57 @@ function MovieDetail({ selectedID, setSelectedId }) {
 
   return (
     <div className="details">
-      <header>
-        <button className="btn-back" onClick={() => setSelectedId(null)}>
-          &larr;
-        </button>
-        <img src={poster} alt={`${title} movie`} />
-        <div className="details-overview">
-          <h2>{title}</h2>
-          <p>{title}</p>
-          <p>
-            {released}&bull; {runtime}
-          </p>
-          <p>{gener}</p>
-          <p>
-            <span>⭐</span>
-            {imdbRating} IMDb rating
-          </p>
-        </div>
-      </header>
-      <section>
-        <div className="rating">
-          <StarRating maxRating={10} size={24} />
-        </div>
-        <p>
-          <em>{plot}</em>
-        </p>
-        <p>Starring {actors}</p>
-        <p>Directed by {director}</p>
-      </section>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          <header>
+            <button className="btn-back" onClick={() => setSelectedId(null)}>
+              &larr;
+            </button>
+            <img src={poster} alt={`${title} movie`} />
+            <div className="details-overview">
+              <h2>{title}</h2>
+
+              <p>
+                {released} &bull;{runtime}
+              </p>
+              <p>{genre}</p>
+              <p>
+                <span>⭐</span>
+                {imdbRating} IMDb rating
+              </p>
+            </div>
+          </header>
+          <section>
+            <div className="rating">
+              {!isWatched ? (
+                <>
+                  <StarRating
+                    maxRating={10}
+                    size={24}
+                    onSetRating={setUserRating}
+                  />
+                  {userRating >= 0 && (
+                    <button className="btn-add" onClick={addNewWatchedMovie}>
+                      + Add to list
+                    </button>
+                  )}
+                </>
+              ) : (
+                <p>
+                  You Rate This Movie {currentUserRating} <span>⭐</span>
+                </p>
+              )}
+            </div>
+            <p>
+              <em>{plot}</em>
+            </p>
+            <p>Starring {actors}</p>
+            <p>Directed by {director}</p>
+          </section>
+        </>
+      )}
     </div>
   );
 }
@@ -288,8 +340,8 @@ function WatchedMovieList({ watched }) {
 function WatchedMovie({ movie }) {
   return (
     <li>
-      <img src={movie.Poster} alt={`${movie.Title} poster`} />
-      <h3>{movie.Title}</h3>
+      <img src={movie.poster} alt={`${movie.title} poster`} />
+      <h3>{movie.title}</h3>
       <div>
         <p>
           <span>⭐️</span>
