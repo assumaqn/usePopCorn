@@ -75,13 +75,16 @@ export default function App() {
     setWatched((watched) => [...watched, movie]);
   }
 
+  const controller = new AbortController();
+
   useEffect(() => {
     setIsLoading(true);
     setError("");
     async function fetchMovie() {
       try {
         const res = await fetch(
-          `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+          `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+          { signal: controller.signal }
         );
 
         if (!res.ok) throw new Error("failed to fetch movie data");
@@ -89,8 +92,11 @@ export default function App() {
         if (data.Response === "False") throw new Error("Movie not found");
         setMovies(data.Search);
       } catch (err) {
+        if (err.name !== "AbortError") {
+          setError(err.message);
+          setError("");
+        }
         // console.error(Error.message);
-        setError(err.message);
       } finally {
         setIsLoading(false);
       }
@@ -101,6 +107,9 @@ export default function App() {
     }
 
     fetchMovie();
+    return function () {
+      controller.abort();
+    };
   }, [query]);
 
   return (
