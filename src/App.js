@@ -75,6 +75,9 @@ export default function App() {
     setWatched((watched) => [...watched, movie]);
   }
 
+  function handleCloseDetail() {
+    setSelectedId(null);
+  }
   const controller = new AbortController();
 
   useEffect(() => {
@@ -135,6 +138,7 @@ export default function App() {
               setSelectedId={setSelectedId}
               onWatchedMovie={handleWatchedMovie}
               watched={watched}
+              onClose={handleCloseDetail}
             />
           ) : (
             <>
@@ -233,7 +237,13 @@ function Movie({ movie, onSelection }) {
     </li>
   );
 }
-function MovieDetail({ selectedID, setSelectedId, onWatchedMovie, watched }) {
+function MovieDetail({
+  selectedID,
+  setSelectedId,
+  onWatchedMovie,
+  watched,
+  onClose,
+}) {
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState("");
@@ -297,6 +307,20 @@ function MovieDetail({ selectedID, setSelectedId, onWatchedMovie, watched }) {
       };
     },
     [title]
+  );
+  useEffect(
+    function () {
+      function callBack(e) {
+        if (e.code === "Escape") {
+          onClose();
+        }
+      }
+      document.addEventListener("keydown", callBack);
+      return function () {
+        document.addEventListener("keydown", callBack);
+      };
+    },
+    [onClose]
   );
 
   return (
