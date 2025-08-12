@@ -1,52 +1,52 @@
 import { useEffect, useState } from "react";
 import StarRating from "./StarRating";
 
-const tempMovieData = [
-  {
-    imdbID: "tt1375666",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-  },
-  {
-    imdbID: "tt0133093",
-    Title: "The Matrix",
-    Year: "1999",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg",
-  },
-  {
-    imdbID: "tt6751668",
-    Title: "Parasite",
-    Year: "2019",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg",
-  },
-];
+// const tempMovieData = [
+//   {
+//     imdbID: "tt1375666",
+//     Title: "Inception",
+//     Year: "2010",
+//     Poster:
+//       "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
+//   },
+//   {
+//     imdbID: "tt0133093",
+//     Title: "The Matrix",
+//     Year: "1999",
+//     Poster:
+//       "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg",
+//   },
+//   {
+//     imdbID: "tt6751668",
+//     Title: "Parasite",
+//     Year: "2019",
+//     Poster:
+//       "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg",
+//   },
+// ];
 
-const tempWatchedData = [
-  {
-    imdbID: "tt1375666",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-    runtime: 148,
-    imdbRating: 8.8,
-    userRating: 10,
-  },
-  {
-    imdbID: "tt0088763",
-    Title: "Back to the Future",
-    Year: "1985",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
-    runtime: 116,
-    imdbRating: 8.5,
-    userRating: 9,
-  },
-];
+// const tempWatchedData = [
+//   {
+//     imdbID: "tt1375666",
+//     Title: "Inception",
+//     Year: "2010",
+//     Poster:
+//       "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
+//     runtime: 148,
+//     imdbRating: 8.8,
+//     userRating: 10,
+//   },
+//   {
+//     imdbID: "tt0088763",
+//     Title: "Back to the Future",
+//     Year: "1985",
+//     Poster:
+//       "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
+//     runtime: 116,
+//     imdbRating: 8.5,
+//     userRating: 9,
+//   },
+// ];
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -61,7 +61,11 @@ export default function App() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [watched, setWatched] = useState([]);
+  // const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(function () {
+    const value = localStorage.getItem("watched");
+    return JSON.parse(value);
+  });
 
   function handleMovieSelect(id) {
     setSelectedId(id);
@@ -78,9 +82,44 @@ export default function App() {
   function handleCloseDetail() {
     setSelectedId(null);
   }
-  const controller = new AbortController();
+
+  // useEffect(function () {
+  //   // const imdbId = "tt1375666";
+  //   // const key = "7b3f1637c0ba901f6bf1f0b5ca39600a";
+  //   const options = {
+  //     method: "GET",
+  //     headers: {
+  //       accept: "application/json",
+  //       Authorization:
+  //         "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3YjNmMTYzN2MwYmE5MDFmNmJmMWYwYjVjYTM5NjAwYSIsIm5iZiI6MTc1NDE0MDcxNy45NjYsInN1YiI6IjY4OGUxMDJkMDI5ZDYyNzRiNDI2MTRhMiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ErMadnu72B5QqQChC3yOy0bP1ph0zuaioYAfxBxuysM",
+  //     },
+  //   };
+  //   const imdbId = "tt0088763";
+
+  //   fetch(
+  //     `https://api.themoviedb.org/3/find/${imdbId}?language=en-US&external_source=imdb_id`,
+  //     options
+  //   )
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       const tmdbMovieId = data.movie_results[0]?.id;
+  //       console.log("TMDb Movie ID:", tmdbMovieId);
+  //     });
+
+  //   const tmdbMovieId = 105; // from above
+
+  //   fetch(
+  //     `https://api.themoviedb.org/3/movie/${tmdbMovieId}/videos?language=en-US`,
+  //     options
+  //   )
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       console.log("Videos:", data.results);
+  //     });
+  // }, []);
 
   useEffect(() => {
+    const controller = new AbortController();
     setIsLoading(true);
     setError("");
     async function fetchMovie() {
@@ -108,12 +147,18 @@ export default function App() {
         setMovies([]);
       }
     }
-
+    handleCloseDetail();
     fetchMovie();
     return function () {
       controller.abort();
     };
   }, [query]);
+  useEffect(
+    function () {
+      localStorage.setItem("watched", JSON.stringify(watched));
+    },
+    [watched]
+  );
 
   return (
     <>
@@ -247,7 +292,7 @@ function MovieDetail({
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState("");
-
+  const [trailer, setTrailer] = useState(false);
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedID);
   const currentUserRating = watched.find(
     (movie) => movie.imdbID === selectedID
@@ -255,7 +300,7 @@ function MovieDetail({
 
   const {
     Title: title,
-    Year: year,
+
     Poster: poster,
     Runtime: runtime,
     imdbRating,
@@ -280,6 +325,9 @@ function MovieDetail({
     onWatchedMovie(newWatchedMovie);
     setSelectedId(null);
   }
+  function handleTrailer() {
+    setTrailer((trailer) => !trailer);
+  }
   useEffect(
     function () {
       setIsLoading(true);
@@ -300,7 +348,7 @@ function MovieDetail({
   useEffect(
     function () {
       if (!title) return;
-      document.title = `Movie| ${title}`;
+      document.title = `Movie | ${title}`;
 
       return function () {
         document.title = "usePopcorn";
@@ -333,19 +381,25 @@ function MovieDetail({
             <button className="btn-back" onClick={() => setSelectedId(null)}>
               &larr;
             </button>
-            <img src={poster} alt={`${title} movie`} />
-            <div className="details-overview">
-              <h2>{title}</h2>
+            {trailer ? (
+              <TrailerEmbed imdbId={selectedID} />
+            ) : (
+              <>
+                <img src={poster} alt={`${title} movie`} />
+                <div className="details-overview">
+                  <h2>{title}</h2>
 
-              <p>
-                {released} &bull;{runtime}
-              </p>
-              <p>{genre}</p>
-              <p>
-                <span>⭐</span>
-                {imdbRating} IMDb rating
-              </p>
-            </div>
+                  <p>
+                    {released} &bull;{runtime}
+                  </p>
+                  <p>{genre}</p>
+                  <p>
+                    <span>⭐</span>
+                    {imdbRating} IMDb rating
+                  </p>
+                </div>
+              </>
+            )}
           </header>
           <section>
             <div className="rating">
@@ -357,9 +411,14 @@ function MovieDetail({
                     onSetRating={setUserRating}
                   />
                   {userRating >= 0 && (
-                    <button className="btn-add" onClick={addNewWatchedMovie}>
-                      + Add to list
-                    </button>
+                    <div className="buttons">
+                      <button className="btn-add" onClick={addNewWatchedMovie}>
+                        + Add to list
+                      </button>
+                      <button className="btn-add" onClick={handleTrailer}>
+                        {trailer ? "✖ Close Trailer" : "▶ Watch Trailer"}
+                      </button>
+                    </div>
                   )}
                 </>
               ) : (
@@ -380,6 +439,72 @@ function MovieDetail({
   );
 }
 
+function TrailerEmbed({ imdbId }) {
+  const [trailerKey, setTrailerKey] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!imdbId) return;
+
+    const options = {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization:
+          "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3YjNmMTYzN2MwYmE5MDFmNmJmMWYwYjVjYTM5NjAwYSIsIm5iZiI6MTc1NDE0MDcxNy45NjYsInN1YiI6IjY4OGUxMDJkMDI5ZDYyNzRiNDI2MTRhMiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ErMadnu72B5QqQChC3yOy0bP1ph0zuaioYAfxBxuysM",
+      },
+    };
+
+    setIsLoading(true);
+    fetch(
+      `https://api.themoviedb.org/3/find/${imdbId}?language=en-US&external_source=imdb_id`,
+      options
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        const tmdbMovieId = data.movie_results[0]?.id;
+        if (!tmdbMovieId) throw new Error("TMDb ID not found");
+
+        //  Get trailers/videos
+        return fetch(
+          `https://api.themoviedb.org/3/movie/${tmdbMovieId}/videos?language=en-US`,
+          options
+        );
+      })
+      .then((res) => res.json())
+      .then((videosData) => {
+        const trailer = videosData.results.find(
+          (v) =>
+            v.type.toLowerCase() === "trailer" &&
+            v.site.toLowerCase() === "youtube"
+        );
+        if (trailer) {
+          setTrailerKey(trailer.key);
+        }
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setTrailerKey(null);
+      });
+  }, [imdbId]);
+
+  // if (!trailerKey) return <p>No trailer found.</p>;
+
+  return isLoading ? (
+    <Loader />
+  ) : (
+    <iframe
+      width="560"
+      height="315"
+      src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&modestbranding=1&rel=0&controls=1`}
+      title="Movie Trailer"
+      frameBorder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen
+    />
+  );
+}
 function WatchedMovieList({ watched, onRemove }) {
   return (
     <ul className="list">
@@ -415,9 +540,9 @@ function WatchedMovie({ movie, onRemove }) {
   );
 }
 function WatchedSummary({ watched }) {
-  const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
-  const avgUserRating = average(watched.map((movie) => movie.userRating));
-  const avgRuntime = average(watched.map((movie) => movie.runtime));
+  const avgImdbRating = average(watched?.map((movie) => movie.imdbRating));
+  const avgUserRating = average(watched?.map((movie) => movie.userRating));
+  const avgRuntime = average(watched?.map((movie) => movie.runtime));
   return (
     <div className="summary">
       <h2>Movies you watched</h2>

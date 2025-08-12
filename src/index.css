@@ -45,7 +45,7 @@ body {
   margin-top: 2.4rem;
   height: calc(100vh - 7.2rem - 3 * 2.4rem);
   display: flex;
-  gap: 2.4rem;
+  gap: 1.5rem;
   justify-content: center;
 }
 
@@ -118,6 +118,11 @@ body {
 .num-results {
   justify-self: end;
   font-size: 1.8rem;
+}
+.buttons {
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
 }
 
 .btn-toggle {
@@ -291,6 +296,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 2.4rem;
+  align-items: center;
 }
 
 .btn-add {
@@ -299,7 +305,7 @@ body {
   border: none;
   border-radius: 10rem;
   font-size: 1.4rem;
-  padding: 1rem;
+  padding: 1.2rem;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s;
