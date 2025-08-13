@@ -52,6 +52,7 @@ export default function StarRating({
         {message.length === maxRating
           ? message[tempRating ? tempRating - 1 : Rating - 1]
           : tempRating || Rating || ""}
+        /{maxRating}
       </p>
     </div>
   );
