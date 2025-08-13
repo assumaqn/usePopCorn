@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
+import { useMovie } from "./useMovie";
 
 // const tempMovieData = [
 //   {
@@ -55,13 +56,11 @@ const KEY = "d8859e1e";
 // const query = " The Matrix";
 //
 export default function App() {
-  const [movies, setMovies] = useState([]);
   const [query, setQuery] = useState("");
   const [selectedID, setSelectedId] = useState(null);
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  // const [watched, setWatched] = useState([]);
+  const { movies, isLoading, error } = useMovie(query);
+
   const [watched, setWatched] = useState(function () {
     const value = localStorage.getItem("watched");
     return JSON.parse(value);
@@ -83,76 +82,6 @@ export default function App() {
     setSelectedId(null);
   }
 
-  // useEffect(function () {
-  //   // const imdbId = "tt1375666";
-  //   // const key = "7b3f1637c0ba901f6bf1f0b5ca39600a";
-  //   const options = {
-  //     method: "GET",
-  //     headers: {
-  //       accept: "application/json",
-  //       Authorization:
-  //         "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3YjNmMTYzN2MwYmE5MDFmNmJmMWYwYjVjYTM5NjAwYSIsIm5iZiI6MTc1NDE0MDcxNy45NjYsInN1YiI6IjY4OGUxMDJkMDI5ZDYyNzRiNDI2MTRhMiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ErMadnu72B5QqQChC3yOy0bP1ph0zuaioYAfxBxuysM",
-  //     },
-  //   };
-  //   const imdbId = "tt0088763";
-
-  //   fetch(
-  //     `https://api.themoviedb.org/3/find/${imdbId}?language=en-US&external_source=imdb_id`,
-  //     options
-  //   )
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       const tmdbMovieId = data.movie_results[0]?.id;
-  //       console.log("TMDb Movie ID:", tmdbMovieId);
-  //     });
-
-  //   const tmdbMovieId = 105; // from above
-
-  //   fetch(
-  //     `https://api.themoviedb.org/3/movie/${tmdbMovieId}/videos?language=en-US`,
-  //     options
-  //   )
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       console.log("Videos:", data.results);
-  //     });
-  // }, []);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    setIsLoading(true);
-    setError("");
-    async function fetchMovie() {
-      try {
-        const res = await fetch(
-          `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
-          { signal: controller.signal }
-        );
-
-        if (!res.ok) throw new Error("failed to fetch movie data");
-        const data = await res.json();
-        if (data.Response === "False") throw new Error("Movie not found");
-        setMovies(data.Search);
-      } catch (err) {
-        if (err.name !== "AbortError") {
-          setError(err.message);
-          setError("");
-        }
-        // console.error(Error.message);
-      } finally {
-        setIsLoading(false);
-      }
-      if (query.length < 3) {
-        setError("");
-        setMovies([]);
-      }
-    }
-    handleCloseDetail();
-    fetchMovie();
-    return function () {
-      controller.abort();
-    };
-  }, [query]);
   useEffect(
     function () {
       localStorage.setItem("watched", JSON.stringify(watched));
