@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 import { useMovie } from "./useMovie";
+import { useKey } from "./useKey";
 import { useLocalStorageState } from "./useLocalStorageState";
 
 // const tempMovieData = [
@@ -150,9 +151,8 @@ function Search({ query, setQuery }) {
   useEffect(
     function () {
       function callBack(e) {
-        if (document.activeElement === inputEl.current) return;
-
         if (e.code === "Enter") {
+          if (document.activeElement === inputEl.current) return;
           inputEl.current.focus();
 
           setQuery("");
@@ -297,20 +297,8 @@ function MovieDetail({
     },
     [title]
   );
-  useEffect(
-    function () {
-      function callBack(e) {
-        if (e.code === "Escape") {
-          onClose();
-        }
-      }
-      document.addEventListener("keydown", callBack);
-      return function () {
-        document.addEventListener("keydown", callBack);
-      };
-    },
-    [onClose]
-  );
+
+  useKey("Escape", onClose);
 
   return (
     <div className="details">
